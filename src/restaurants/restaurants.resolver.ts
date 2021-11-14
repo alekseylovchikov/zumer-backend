@@ -1,3 +1,4 @@
+import { BadRequestException } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { CreateRestaurantDto } from './dtos/create-restaurant.dto';
 
@@ -14,7 +15,13 @@ export class RestaurantsResolver {
   }
 
   @Mutation(() => Restaurant)
-  createRestaurant(@Args() body: CreateRestaurantDto): Restaurant {
-    return body as Restaurant;
+  createRestaurant(
+    @Args('input') body: CreateRestaurantDto,
+  ): Promise<Restaurant> {
+    try {
+      return this.restaurantService.createRestaurant(body);
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
   }
 }
