@@ -51,4 +51,8 @@ export class UsersService {
       throw new BadRequestException(error);
     }
   }
+
+  async findById(id: number): Promise<User> {
+    return this.users.findOne(id);
+  }
 }
