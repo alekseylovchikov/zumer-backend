@@ -16,6 +16,7 @@ import { JwtModule } from './jwt/jwt.module';
 import { JwtMiddleware } from './jwt/jwt.middleware';
 import { AuthModule } from './auth/auth.module';
 import { Verification } from './users/entities/verification.entity';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
@@ -33,6 +34,9 @@ import { Verification } from './users/entities/verification.entity';
         DB_PASSWORD: Joi.string().required(),
         DB_DATABASE: Joi.string().required(),
         PRIVATE_KEY: Joi.string().required(),
+        MAIL_API_KEY: Joi.string().required(),
+        MAIL_DOMAIN: Joi.string().required(),
+        MAIL_FROM_EMAIL: Joi.string().required(),
       }),
     }),
     TypeOrmModule.forRoot({
@@ -45,16 +49,21 @@ import { Verification } from './users/entities/verification.entity';
       // entities: [__dirname + '/**/*.entity{.ts,.js}'],
       entities: [User, Verification],
       synchronize: process.env.NODE_ENV !== 'production',
-      logging: true,
+      logging: process.env.NODE_ENV !== 'production',
     }),
     GraphQLModule.forRoot({
       autoSchemaFile: true,
       context: ({ req }) => ({ user: req['user'] }),
     }),
-    UsersModule,
     JwtModule.forRoot({
       privateKey: process.env.PRIVATE_KEY,
     }),
+    MailModule.forRoot({
+      apiKey: process.env.MAIL_API_KEY,
+      domain: process.env.MAIL_DOMAIN,
+      fromEmail: process.env.MAIL_FROM_EMAIL,
+    }),
+    UsersModule,
   ],
   controllers: [],
   providers: [],
